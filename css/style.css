@@ -28,7 +28,7 @@ body, html {
     display: flex;
 }
 
-        /* MENU PRINCIPAL */
+/* MENU PRINCIPAL */
 
 .menu-container {
     text-align: center;
@@ -81,9 +81,10 @@ body, html {
     border: 2px solid #b7950b;
 }
 
-        /* MODAIS */
+/* MODAIS E CAIXAS DE MENSAGEM */
 
-.modal {
+.modal,
+.modal-overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -96,26 +97,53 @@ body, html {
     z-index: 1000;
 }
 
-.modal.active {
+.modal.active,
+.modal-overlay.active {
     display: flex;
 }
 
+/* Modal Padrão (Fundo Branco com texto escuro) */
 .modal-content {
-    background: #2c3e50;
-    padding: 40px;
-    border-radius: 20px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
     width: 700px;
     max-width: 90vw;
     max-height: 90vh;
     overflow-y: auto;
+    text-align: center;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    color: #2d3748 !important;
 }
 
+.modal-content h2,
+.modal-content p,
+.modal-content span,
+.modal-content label,
+.modal-content li,
+.modal-content div {
+    color: #2d3748 !important;
+}
+
+/* Modal de Configuração (Fundo Escuro com texto claro) */
+.modal-content.config-content,
 .config-content {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
+    background: linear-gradient(135deg, #2c3e50, #34495e) !important;
     border: 4px solid #f1c40f;
+    color: #ffffff !important;
+}
+
+.config-content h2,
+.config-content p,
+.config-content span,
+.config-content label,
+.config-content li,
+.config-content div,
+.config-item {
+    color: #ffffff !important;
 }
 
 .level-selectors {
@@ -162,7 +190,44 @@ body, html {
     color: #333;
 }
 
-        /* TELA DO JOGO */
+.config-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.config-actions button {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.2rem;
+}
+
+.btn-confirm { background-color: #22c55e; color: white; }
+.btn-cancel { background-color: #ef4444; color: white; }
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-action {
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #3182ce;
+    color: white;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btn-action:hover {
+    background-color: #2b6cb0;
+}
+
+/* TELA DO JOGO */
 
 #game-screen {
     justify-content: flex-start;
@@ -229,6 +294,7 @@ body, html {
     border: 6px solid #f59e0b;
     transform: scale(1.05);
     box-shadow: 0 0 25px #f59e0b;
+    z-index: 100;
 }
 
 .card img, .card .fallback-icon {
@@ -253,7 +319,7 @@ body, html {
     align-items: center;
 }
 
-        /* ÁREA DE COLEÇÃO (CANTO INFERIOR DIREITO) */
+/* ÁREA DE COLEÇÃO (CANTO INFERIOR DIREITO) */
 
 .collection {
     position: fixed;
@@ -280,7 +346,7 @@ body, html {
     font-size: 1.5rem;
 }
 
-        /* BOTÕES MANUAIS NA 2ª CARTA */
+/* BOTÕES MANUAIS NA 2ª CARTA */
 
 .manual-action-bar {
     display: none;
@@ -326,25 +392,3 @@ body, html {
     align-items: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
-
-.card.selected-second {
-    border: 6px solid #f59e0b;
-    transform: scale(1.05);
-    box-shadow: 0 0 25px #f59e0b;
-    z-index: 100;
-}
-
-.config-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.config-actions button {
-    flex: 1;
-    padding: 15px;
-    font-size: 1.2rem;
-}
-
-.btn-confirm { background-color: #22c55e; color: white; }
-.btn-cancel { background-color: #ef4444; color: white; }

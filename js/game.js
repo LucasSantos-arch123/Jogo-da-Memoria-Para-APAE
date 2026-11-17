@@ -19,6 +19,15 @@ let gameState = {
 
 document.addEventListener('DOMContentLoaded', () => {
     setupUI();
+
+    const btnBackMenu = document.getElementById('btn-back-menu');
+
+    if (btnBackMenu) {
+        btnBackMenu.addEventListener('click', () => {
+            document.getElementById('victory-modal').style.display = 'none';
+            location.reload(); // Retorna ao menu recarregando a página
+        });
+    }
 });
 
 function setupUI() {
@@ -125,8 +134,6 @@ function preloadAudios() {
     });
 }
 
-        // SUBSTITUA A FUNÇÃO PLAYSOUND EXISTENTE
-
 function playSound(animalId, isRepeat = false) {
     // O LIMITE CONFIGURADO PELO CUIDADOR SÓ RESTRINGE REPETIÇÕES MANUAIS NA MESMA RODADA
     if (isRepeat && config.soundLimit !== 'unlimited') {
@@ -148,6 +155,11 @@ function playSound(animalId, isRepeat = false) {
             gameState.currentAudio = audio;
         }).catch(e => console.log("Áudio indisponível, usando fallback visual."));
     }
+}
+
+function playSystemSound(soundName) {
+    const audio = new Audio(`assets/sounds/${soundName}.mp3`);
+    audio.play().catch(e => console.log(`Áudio do sistema (${soundName}) indisponível.`));
 }
 
 function buildBoard() {
@@ -268,9 +280,12 @@ function cleanupManualActions() {
 function resetSecondCardSelection() {
     if (!gameState.secondCard) return;
     const { card } = gameState.secondCard;
-    card.classList.remove('selected-second', 'show-silhouette');
+    
+    // REMOVE TODAS AS CLASSES DE SELEÇÃO E VISUALIZAÇÃO DA SEGUNDA CARTA, VOLTANDO A FICAR AZUL (OCULTA)
+    card.classList.remove('selected-second', 'show-silhouette', 'flipped');
+    
     gameState.secondCard = null;
-    gameState.lockBoard = false;    // LIBERA O TABULEIRO AO CANCELAR
+    gameState.lockBoard = false;
 }
 
 function evaluateMatch() {
@@ -289,6 +304,8 @@ function evaluateMatch() {
             c2.card.style.visibility = 'hidden';
 
             addToCollection(c1.cardData);
+            playSystemSound('acerto'); // Toca neste exato momento e corta o áudio do animal
+
             gameState.matchesFound++;
             updateScoreBoard();
 
@@ -313,6 +330,12 @@ function evaluateMatch() {
     gameState.soundCounts = {};
 }
 
+function showVictoryModal() {
+    playSystemSound('vitoria');
+    const modal = document.getElementById('victory-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
 function resetTurnState() {
     gameState.firstCard = null;
     gameState.secondCard = null;
@@ -332,8 +355,9 @@ function addToCollection(cardData) {
 }
 
 function showVictoryModal() {
-    alert("Parabéns! Todos os pares foram encontrados!");
-    returnToMenu();
+    playSystemSound('vitoria');
+    const modal = document.getElementById('victory-modal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function returnToMenu() {
@@ -353,4 +377,30 @@ function confirmAction(text, callback) {
     document.getElementById('confirm-no').onclick = () => {
         modal.classList.remove('active');
     };
+}
+
+// Função para tocar sons do sistema (vitória e erro)
+// Função para tocar sons do sistema interrompendo qualquer áudio anterior
+function playSystemSound(soundName) {
+    if (gameState.currentAudio) {
+        gameState.currentAudio.pause();
+        gameState.currentAudio.currentTime = 0;
+    }
+
+    const audio = new Audio(`assets/sounds/${soundName}.mp3`);
+    audio.play().then(() => {
+        gameState.currentAudio = audio;
+    }).catch(e => console.log(`Áudio do sistema (${soundName}) indisponível.`));
+}
+
+// Chame esta função quando o jogador completar todos os pares do jogo
+function triggerVictory() {
+    playSystemSound('vitoria');
+    const modal = document.getElementById('victory-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+// Chame esta função dentro da sua lógica de erro (ex: após errar a tentativa de par)
+function triggerErrorSound() {
+    playSystemSound('erro');
 }
