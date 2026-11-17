@@ -27,17 +27,29 @@ function setupUI() {
     const btnGuide = document.getElementById('btn-guide');
     const btnConfig = document.getElementById('btn-config');
     const closeGuide = document.getElementById('close-guide');
-    const saveConfig = document.getElementById('save-config');
+    const saveAndStart = document.getElementById('save-and-start');
+    const saveAndExit = document.getElementById('save-and-exit');
     
     btnStart.addEventListener('click', startGame);
     btnGuide.addEventListener('click', () => document.getElementById('modal-guide').classList.add('active'));
     closeGuide.addEventListener('click', () => document.getElementById('modal-guide').classList.remove('active'));
     
     btnConfig.addEventListener('click', () => document.getElementById('modal-config').classList.add('active'));
-    saveConfig.addEventListener('click', () => {
-        document.getElementById('modal-config').classList.remove('active');
-        startGame();
-    });
+    
+    if (saveAndStart) {
+        saveAndStart.addEventListener('click', () => {
+            updateConfigFromInputs();
+            document.getElementById('modal-config').classList.remove('active');
+            startGame();
+        });
+    }
+
+    if (saveAndExit) {
+        saveAndExit.addEventListener('click', () => {
+            updateConfigFromInputs();
+            document.getElementById('modal-config').classList.remove('active');
+        });
+    }
 
     document.querySelectorAll('.level-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {

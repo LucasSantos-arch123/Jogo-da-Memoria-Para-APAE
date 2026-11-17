@@ -299,5 +299,17 @@ body, html {
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
+.config-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.config-actions button {
+    flex: 1;
+    padding: 15px;
+    font-size: 1.2rem;
+}
+
 .btn-confirm { background-color: #22c55e; color: white; }
 .btn-cancel { background-color: #ef4444; color: white; }
