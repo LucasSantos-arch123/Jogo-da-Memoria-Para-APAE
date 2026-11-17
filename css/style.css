@@ -230,8 +230,8 @@ body, html {
 }
 
 .card img, .card .fallback-icon {
-    width: 80%;
-    height: 80%;
+    width: 95%;
+    height: 95%;
     object-fit: contain;
     display: none;
 }
@@ -246,7 +246,7 @@ body, html {
 }
 
 .fallback-icon {
-    font-size: 4rem;
+    font-size: 6rem;
     justify-content: center;
     align-items: center;
 }
@@ -278,25 +278,57 @@ body, html {
 }
 
 /* Botões Manuais na 2ª Carta */
-.manual-actions {
-    position: absolute;
-    bottom: -60px;
+
+.manual-action-bar {
+    display: none;
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 41, 59, 0.95);
+    border: 3px solid #f59e0b;
+    padding: 15px 30px;
+    border-radius: 16px;
+    z-index: 1000;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.manual-action-bar.active {
     display: flex;
-    gap: 10px;
-    z-index: 10;
+}
+
+.manual-action-bar p {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #fff;
+    margin: 0;
+}
+
+.bar-buttons {
+    display: flex;
+    gap: 15px;
 }
 
 .action-btn {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.card.selected-second {
+    border: 6px solid #f59e0b;
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #f59e0b;
+    z-index: 100;
 }
 
 .config-actions {

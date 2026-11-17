@@ -180,22 +180,24 @@ function handleCardClick(card, cardData) {
         gameState.firstCard = { card, cardData };
         card.classList.add('flipped');
         playSound(cardData.id);
-        card.onclick = () => playSound(cardData.id);
         return;
     }
 
     if (gameState.firstCard.card === card) return;
 
     gameState.secondCard = { card, cardData };
+    gameState.lockBoard = true; // Trava imediatamente o tabuleiro
     card.classList.add('selected-second');
+    
     if (config.silhouette) {
         card.classList.add('show-silhouette');
+    } else {
+        card.classList.add('flipped');
     }
+
     playSound(cardData.id);
-    card.onclick = () => playSound(cardData.id);
 
     if (config.confirmation === 'auto') {
-        gameState.lockBoard = true;
         setTimeout(() => evaluateMatch(), 1500);
     } else {
         showManualConfirmation();
@@ -203,23 +205,23 @@ function handleCardClick(card, cardData) {
 }
 
 function showManualConfirmation() {
-    const card = gameState.secondCard.card;
-    const actionsDiv = document.createElement('div');
-    actionsDiv.classList.add('manual-actions');
-    actionsDiv.innerHTML = `
-        <button class="action-btn btn-confirm" id="btn-ok">✔️</button>
-        <button class="action-btn btn-cancel" id="btn-no">❌</button>
-    `;
-    card.appendChild(actionsDiv);
+    const actionBar = document.getElementById('manual-action-bar');
+    actionBar.classList.add('active');
 
-    document.getElementById('btn-ok').addEventListener('click', (e) => {
-        e.stopPropagation();
+    const btnOk = document.getElementById('btn-global-ok');
+    const btnNo = document.getElementById('btn-global-no');
+
+    const newBtnOk = btnOk.cloneNode(true);
+    const newBtnNo = btnNo.cloneNode(true);
+    btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+    btnNo.parentNode.replaceChild(newBtnNo, btnNo);
+
+    newBtnOk.addEventListener('click', () => {
         cleanupManualActions();
         evaluateMatch();
     });
 
-    document.getElementById('btn-no').addEventListener('click', (e) => {
-        e.stopPropagation();
+    newBtnNo.addEventListener('click', () => {
         cleanupManualActions();
         resetSecondCardSelection();
     });
@@ -235,16 +237,15 @@ function showManualConfirmation() {
 
 function cleanupManualActions() {
     if (gameState.timerInterval) clearTimeout(gameState.timerInterval);
-    const actions = document.querySelector('.manual-actions');
-    if (actions) actions.remove();
+    document.getElementById('manual-action-bar').classList.remove('active');
 }
 
 function resetSecondCardSelection() {
     if (!gameState.secondCard) return;
-    const { card, cardData } = gameState.secondCard;
+    const { card } = gameState.secondCard;
     card.classList.remove('selected-second', 'show-silhouette');
-    card.onclick = () => handleCardClick(card, cardData);
     gameState.secondCard = null;
+    gameState.lockBoard = false; // Libera o tabuleiro ao cancelar
 }
 
 function evaluateMatch() {
