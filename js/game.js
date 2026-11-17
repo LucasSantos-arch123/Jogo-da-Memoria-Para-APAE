@@ -1,4 +1,3 @@
-// js/game.js
 let config = {
     pairs: 6,
     silhouette: true,
@@ -116,6 +115,7 @@ function startGame() {
 }
 
 function preloadAudios() {
+
     animaisDB.forEach(animal => {
         if (!gameState.audioCache[animal.id]) {
             const audio = new Audio(animal.sound);
@@ -125,16 +125,28 @@ function preloadAudios() {
     });
 }
 
-function playSound(animalId) {
-    if (config.soundLimit !== 'unlimited') {
+        // SUBSTITUA A FUNÇÃO PLAYSOUND EXISTENTE
+
+function playSound(animalId, isRepeat = false) {
+    // O LIMITE CONFIGURADO PELO CUIDADOR SÓ RESTRINGE REPETIÇÕES MANUAIS NA MESMA RODADA
+    if (isRepeat && config.soundLimit !== 'unlimited') {
         gameState.soundCounts[animalId] = (gameState.soundCounts[animalId] || 0) + 1;
         const limit = parseInt(config.soundLimit);
         if (gameState.soundCounts[animalId] > limit) return;
     }
+
+    // INTERROMPE QUALQUER ÁUDIO QUE ESTEJA TOCANDO NO MOMENTO
+    if (gameState.currentAudio) {
+        gameState.currentAudio.pause();
+        gameState.currentAudio.currentTime = 0;
+    }
+
     const audio = gameState.audioCache[animalId];
     if (audio) {
         audio.currentTime = 0;
-        audio.play().catch(e => console.log("Áudio indisponível, usando fallback visual."));
+        audio.play().then(() => {
+            gameState.currentAudio = audio;
+        }).catch(e => console.log("Áudio indisponível, usando fallback visual."));
     }
 }
 
@@ -173,20 +185,33 @@ function buildBoard() {
 }
 
 function handleCardClick(card, cardData) {
+    const isAlreadyOpen = card.classList.contains('flipped') || 
+                          card.classList.contains('collected') || 
+                          card.classList.contains('selected-second');
+
+    // BLOQUEIA A ABERTURA DE NOVAS CARTAS ENQUANTO AGUARDA CONFIRMAÇÃO OU AVALIAÇÃO
+    if (isAlreadyOpen) {
+        playSound(cardData.id, true);
+        return;
+    }
+
+    // BLOQUEIA A ABERTURA DE NOVAS CARTAS ENQUANTO AGUARDA CONFIRMAÇÃO OU AVALIAÇÃO
     if (gameState.lockBoard) return;
-    if (card.classList.contains('flipped') || card.classList.contains('collected')) return;
 
     if (!gameState.firstCard) {
         gameState.firstCard = { card, cardData };
         card.classList.add('flipped');
-        playSound(cardData.id);
+        playSound(cardData.id, false); // ABERTURA INICIAL SEMPRE TOCA O SOM
         return;
     }
 
-    if (gameState.firstCard.card === card) return;
+    if (gameState.firstCard.card === card) {
+        playSound(cardData.id, true);
+        return;
+    }
 
     gameState.secondCard = { card, cardData };
-    gameState.lockBoard = true; // Trava imediatamente o tabuleiro
+    gameState.lockBoard = true;
     card.classList.add('selected-second');
     
     if (config.silhouette) {
@@ -195,7 +220,7 @@ function handleCardClick(card, cardData) {
         card.classList.add('flipped');
     }
 
-    playSound(cardData.id);
+    playSound(cardData.id, false); // ABERTURA INICIAL SEMPRE TOCA O SOM
 
     if (config.confirmation === 'auto') {
         setTimeout(() => evaluateMatch(), 1500);
@@ -245,7 +270,7 @@ function resetSecondCardSelection() {
     const { card } = gameState.secondCard;
     card.classList.remove('selected-second', 'show-silhouette');
     gameState.secondCard = null;
-    gameState.lockBoard = false; // Libera o tabuleiro ao cancelar
+    gameState.lockBoard = false;    // LIBERA O TABULEIRO AO CANCELAR
 }
 
 function evaluateMatch() {
@@ -285,6 +310,7 @@ function evaluateMatch() {
             resetTurnState();
         }, 2000);
     }
+    gameState.soundCounts = {};
 }
 
 function resetTurnState() {

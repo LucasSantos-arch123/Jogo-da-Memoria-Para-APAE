@@ -1,4 +1,3 @@
-/* css/style.css */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -29,7 +28,8 @@ body, html {
     display: flex;
 }
 
-/* Menu Principal */
+        /* MENU PRINCIPAL */
+
 .menu-container {
     text-align: center;
     display: flex;
@@ -81,7 +81,8 @@ body, html {
     border: 2px solid #b7950b;
 }
 
-/* Modais */
+        /* MODAIS */
+
 .modal {
     display: none;
     position: fixed;
@@ -161,7 +162,8 @@ body, html {
     color: #333;
 }
 
-/* Tela do Jogo */
+        /* TELA DO JOGO */
+
 #game-screen {
     justify-content: flex-start;
     padding: 20px;
@@ -251,7 +253,8 @@ body, html {
     align-items: center;
 }
 
-/* Área de Coleção (Canto Inferior Direito) */
+        /* ÁREA DE COLEÇÃO (CANTO INFERIOR DIREITO) */
+
 .collection {
     position: fixed;
     bottom: 20px;
@@ -277,7 +280,7 @@ body, html {
     font-size: 1.5rem;
 }
 
-/* Botões Manuais na 2ª Carta */
+        /* BOTÕES MANUAIS NA 2ª CARTA */
 
 .manual-action-bar {
     display: none;
