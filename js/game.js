@@ -14,24 +14,26 @@ let gameState = {
     matchesFound: 0,
     soundCounts: {},
     audioCache: {},
-    timerInterval: null
+    timerInterval: null,
+    currentAudio: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     setupUI();
 
     const btnBackMenu = document.getElementById('btn-back-menu');
-
     if (btnBackMenu) {
         btnBackMenu.addEventListener('click', () => {
             document.getElementById('victory-modal').style.display = 'none';
-            location.reload(); // Retorna ao menu recarregando a página
+            location.reload();
         });
     }
 });
 
 function setupUI() {
     const btnStart = document.getElementById('btn-start');
+    const btnGallery = document.getElementById('btn-gallery');
+    const btnGalleryBack = document.getElementById('btn-gallery-back');
     const btnGuide = document.getElementById('btn-guide');
     const btnConfig = document.getElementById('btn-config');
     const closeGuide = document.getElementById('close-guide');
@@ -39,6 +41,22 @@ function setupUI() {
     const saveAndExit = document.getElementById('save-and-exit');
     
     btnStart.addEventListener('click', startGame);
+
+    if (btnGallery) {
+        btnGallery.addEventListener('click', openGallery);
+    }
+
+    if (btnGalleryBack) {
+        btnGalleryBack.addEventListener('click', () => {
+            if (gameState.currentAudio) {
+                gameState.currentAudio.pause();
+                gameState.currentAudio.currentTime = 0;
+            }
+            document.getElementById('gallery-screen').classList.remove('active');
+            document.getElementById('main-menu').classList.add('active');
+        });
+    }
+
     btnGuide.addEventListener('click', () => document.getElementById('modal-guide').classList.add('active'));
     closeGuide.addEventListener('click', () => document.getElementById('modal-guide').classList.remove('active'));
     
@@ -77,6 +95,29 @@ function setupUI() {
 
     document.getElementById('btn-restart-game').addEventListener('click', () => confirmAction("Reiniciar partida?", startGame));
     document.getElementById('btn-menu-game').addEventListener('click', () => confirmAction("Voltar ao menu principal?", returnToMenu));
+}
+
+function openGallery() {
+    preloadAudios();
+    document.getElementById('main-menu').classList.remove('active');
+    document.getElementById('gallery-screen').classList.add('active');
+    buildGallery();
+}
+
+function buildGallery() {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = '';
+
+    animaisDB.forEach(animal => {
+        const card = document.createElement('div');
+        card.classList.add('gallery-card');
+        card.innerHTML = `
+            <img src="${animal.img}" alt="${animal.nome}">
+            <span>${animal.nome}</span>
+        `;
+        card.addEventListener('click', () => playSound(animal.id, false));
+        grid.appendChild(card);
+    });
 }
 
 function applyLevelPreset(level) {
@@ -124,7 +165,6 @@ function startGame() {
 }
 
 function preloadAudios() {
-
     animaisDB.forEach(animal => {
         if (!gameState.audioCache[animal.id]) {
             const audio = new Audio(animal.sound);
@@ -135,14 +175,12 @@ function preloadAudios() {
 }
 
 function playSound(animalId, isRepeat = false) {
-    // O LIMITE CONFIGURADO PELO CUIDADOR SÓ RESTRINGE REPETIÇÕES MANUAIS NA MESMA RODADA
     if (isRepeat && config.soundLimit !== 'unlimited') {
         gameState.soundCounts[animalId] = (gameState.soundCounts[animalId] || 0) + 1;
         const limit = parseInt(config.soundLimit);
         if (gameState.soundCounts[animalId] > limit) return;
     }
 
-    // INTERROMPE QUALQUER ÁUDIO QUE ESTEJA TOCANDO NO MOMENTO
     if (gameState.currentAudio) {
         gameState.currentAudio.pause();
         gameState.currentAudio.currentTime = 0;
@@ -153,13 +191,20 @@ function playSound(animalId, isRepeat = false) {
         audio.currentTime = 0;
         audio.play().then(() => {
             gameState.currentAudio = audio;
-        }).catch(e => console.log("Áudio indisponível, usando fallback visual."));
+        }).catch(e => console.log("Áudio indisponível."));
     }
 }
 
 function playSystemSound(soundName) {
+    if (gameState.currentAudio) {
+        gameState.currentAudio.pause();
+        gameState.currentAudio.currentTime = 0;
+    }
+
     const audio = new Audio(`assets/sounds/${soundName}.mp3`);
-    audio.play().catch(e => console.log(`Áudio do sistema (${soundName}) indisponível.`));
+    audio.play().then(() => {
+        gameState.currentAudio = audio;
+    }).catch(e => console.log(`Áudio do sistema (${soundName}) indisponível.`));
 }
 
 function buildBoard() {
@@ -174,7 +219,6 @@ function buildBoard() {
             uniqueId: index,
             id: animal.id,
             nome: animal.nome,
-            emoji: animal.emoji,
             img: animal.img
         }));
 
@@ -186,10 +230,7 @@ function buildBoard() {
         card.dataset.uniqueId = cardData.uniqueId;
         card.dataset.id = cardData.id;
 
-        card.innerHTML = `
-            <div class="fallback-icon">${cardData.emoji}</div>
-            <img src="${cardData.img}" alt="${cardData.nome}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        `;
+        card.innerHTML = `<img src="${cardData.img}" alt="${cardData.nome}">`;
 
         card.addEventListener('click', () => handleCardClick(card, cardData));
         board.appendChild(card);
@@ -201,19 +242,17 @@ function handleCardClick(card, cardData) {
                           card.classList.contains('collected') || 
                           card.classList.contains('selected-second');
 
-    // BLOQUEIA A ABERTURA DE NOVAS CARTAS ENQUANTO AGUARDA CONFIRMAÇÃO OU AVALIAÇÃO
     if (isAlreadyOpen) {
         playSound(cardData.id, true);
         return;
     }
 
-    // BLOQUEIA A ABERTURA DE NOVAS CARTAS ENQUANTO AGUARDA CONFIRMAÇÃO OU AVALIAÇÃO
     if (gameState.lockBoard) return;
 
     if (!gameState.firstCard) {
         gameState.firstCard = { card, cardData };
         card.classList.add('flipped');
-        playSound(cardData.id, false); // ABERTURA INICIAL SEMPRE TOCA O SOM
+        playSound(cardData.id, false);
         return;
     }
 
@@ -232,7 +271,7 @@ function handleCardClick(card, cardData) {
         card.classList.add('flipped');
     }
 
-    playSound(cardData.id, false); // ABERTURA INICIAL SEMPRE TOCA O SOM
+    playSound(cardData.id, false);
 
     if (config.confirmation === 'auto') {
         setTimeout(() => evaluateMatch(), 1500);
@@ -281,7 +320,6 @@ function resetSecondCardSelection() {
     if (!gameState.secondCard) return;
     const { card } = gameState.secondCard;
     
-    // REMOVE TODAS AS CLASSES DE SELEÇÃO E VISUALIZAÇÃO DA SEGUNDA CARTA, VOLTANDO A FICAR AZUL (OCULTA)
     card.classList.remove('selected-second', 'show-silhouette', 'flipped');
     
     gameState.secondCard = null;
@@ -304,7 +342,7 @@ function evaluateMatch() {
             c2.card.style.visibility = 'hidden';
 
             addToCollection(c1.cardData);
-            playSystemSound('acerto'); // Toca neste exato momento e corta o áudio do animal
+            playSystemSound('acerto');
 
             gameState.matchesFound++;
             updateScoreBoard();
@@ -322,8 +360,6 @@ function evaluateMatch() {
         setTimeout(() => {
             c1.card.classList.remove('flipped');
             c2.card.classList.remove('selected-second', 'show-silhouette', 'flipped');
-            c1.card.onclick = () => handleCardClick(c1.card, c1.cardData);
-            c2.card.onclick = () => handleCardClick(c2.card, c2.cardData);
             resetTurnState();
         }, 2000);
     }
@@ -350,14 +386,8 @@ function addToCollection(cardData) {
     const collection = document.getElementById('collection-area');
     const item = document.createElement('div');
     item.classList.add('collected-item');
-    item.innerHTML = cardData.emoji;
+    item.innerHTML = `<img src="${cardData.img}" alt="${cardData.nome}">`;
     collection.appendChild(item);
-}
-
-function showVictoryModal() {
-    playSystemSound('vitoria');
-    const modal = document.getElementById('victory-modal');
-    if (modal) modal.style.display = 'flex';
 }
 
 function returnToMenu() {
@@ -379,28 +409,12 @@ function confirmAction(text, callback) {
     };
 }
 
-// Função para tocar sons do sistema (vitória e erro)
-// Função para tocar sons do sistema interrompendo qualquer áudio anterior
-function playSystemSound(soundName) {
-    if (gameState.currentAudio) {
-        gameState.currentAudio.pause();
-        gameState.currentAudio.currentTime = 0;
-    }
-
-    const audio = new Audio(`assets/sounds/${soundName}.mp3`);
-    audio.play().then(() => {
-        gameState.currentAudio = audio;
-    }).catch(e => console.log(`Áudio do sistema (${soundName}) indisponível.`));
-}
-
-// Chame esta função quando o jogador completar todos os pares do jogo
 function triggerVictory() {
     playSystemSound('vitoria');
     const modal = document.getElementById('victory-modal');
     if (modal) modal.style.display = 'flex';
 }
 
-// Chame esta função dentro da sua lógica de erro (ex: após errar a tentativa de par)
 function triggerErrorSound() {
     playSystemSound('erro');
 }
