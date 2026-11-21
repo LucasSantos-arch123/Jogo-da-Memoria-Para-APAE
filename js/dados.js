@@ -1,4 +1,3 @@
-// js/dados.js
 const animaisDB = [
     { id: 1, nome: "Leão", img: "assets/animals/leao.png", sound: "assets/sounds/leao.mp3" },
     { id: 2, nome: "Elefante", img: "assets/animals/elefante.png", sound: "assets/sounds/elefante.mp3" },

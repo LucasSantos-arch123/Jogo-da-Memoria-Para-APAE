@@ -7,89 +7,146 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-        <!-- MENU PRINCIPAL -->
+    <!-- ======================================================================
+         MENU PRINCIPAL
+         ====================================================================== -->
 
-<!-- MENU PRINCIPAL -->
-    <div id="main-menu" class="screen active">
+         
+    <main id="main-menu" class="screen active">
+
         <div class="menu-container">
             <h1>🎮 Jogo da Memória Sensorial</h1>
-            <div class="menu-buttons">
-                <button id="btn-start" class="btn btn-primary">INICIAR JOGO</button>
-                <button id="btn-gallery" class="btn btn-secondary">GALERIA</button>
-                <button id="btn-guide" class="btn btn-secondary">GUIA DO CUIDADOR</button>
-                <button id="btn-config" class="btn btn-gold">CONFIGURAÇÕES DO CUIDADOR</button>
-            </div>
+            <nav class="menu-buttons" aria-label="Menu principal">
+                <button id="btn-start" type="button" class="btn btn-primary">INICIAR JOGO</button>
+                <button id="btn-gallery" type="button" class="btn btn-secondary">GALERIA</button>
+                <button id="btn-guide" type="button" class="btn btn-secondary">GUIA DO CUIDADOR</button>
+                <button id="btn-config" type="button" class="btn btn-gold">CONFIGURAÇÕES DO CUIDADOR</button>
+            </nav>
         </div>
-    </div>
 
-    <!-- GALERIA -->
-    <section id="gallery-screen" class="screen">
-        <div class="gallery-header">
+    </main>
+
+    <!-- ======================================================================
+         GALERIA DE ANIMAIS
+         ====================================================================== -->
+    <section id="gallery-screen" class="screen" aria-label="Galeria de Animais">
+
+        <header class="gallery-header">
             <h2>Galeria de Animais</h2>
-            <button id="btn-gallery-back" class="btn btn-secondary">Voltar ao Menu</button>
-        </div>
+            <button id="btn-gallery-back" type="button" class="btn btn-secondary">Voltar ao Menu</button>
+        </header>
+
         <div id="gallery-grid" class="gallery-grid"></div>
+
     </section>
 
-        <!-- MODAL GUIA DO CUIDADOR -->
+    <!-- ======================================================================
+         TELA DO JOGO
+         ====================================================================== -->
 
-    <div id="modal-guide" class="modal">
+
+    <section id="game-screen" class="screen" aria-label="Tela do Jogo">
+        <header class="game-header">
+
+            <div id="score-counter">Pares: 0 / 6</div>
+
+            <div class="top-menu-controls">
+                <button id="btn-restart-game" type="button" class="btn-icon">🔄 Reiniciar</button>
+                <button id="btn-menu-game" type="button" class="btn-icon">🏠 Menu</button>
+            </div>
+
+        </header>
+
+
+        <div id="game-board" class="board"></div>
+
+
+        <div id="manual-action-bar" class="manual-action-bar" role="region" aria-label="Confirmação manual">
+
+            <p>Confirmar escolha?</p>
+
+            <div class="bar-buttons">
+                <button id="btn-global-ok" type="button" class="action-btn btn-confirm" aria-label="Confirmar">✔️</button>
+                <button id="btn-global-no" type="button" class="action-btn btn-cancel" aria-label="Cancelar">❌</button>
+            </div>
+
+        </div>
+
+
+        <aside id="collection-area" class="collection" aria-label="Animais coletados"></aside>
+    </section>
+
+
+    <!-- ======================================================================
+         MODAIS
+         ====================================================================== -->
+
+
+    <div id="modal-guide" class="modal" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+
         <div class="modal-content">
-            <h2>Guia de Mediação Pedagógica</h2>
+            <h2 id="guide-title">Guia de Mediação Pedagógica</h2>
             <p>Este jogo foi desenvolvido para estímulo visual e auditivo de alunos da APAE em TVs touchscreen.</p>
             <ul>
                 <li><strong>1ª Carta:</strong> Ao tocar, revela o animal e o som correspondente. Pode ser tocada novamente para repetir o som.</li>
                 <li><strong>2ª Carta:</strong> Exibe silhueta e som. Permite associação antes da confirmação.</li>
                 <li><strong>Mediação:</strong> Utilize os níveis de dificuldade para adequar o desafio à necessidade motora e cognitiva do aluno.</li>
             </ul>
-            <button id="close-guide" class="btn btn-secondary">FECHAR</button>
+            <button id="close-guide" type="button" class="btn btn-secondary">FECHAR</button>
         </div>
+
     </div>
 
-        <!-- MODAL CONFIGURAÇÕES DO CUIDADOR (DOURADO/ÂMBAR) -->
 
-    <div id="modal-config" class="modal">
+    <div id="modal-config" class="modal" role="dialog" aria-modal="true" aria-labelledby="config-title">
+
         <div class="modal-content config-content">
-            <h2>⚙️ Configurações do Cuidador</h2>
-            <div class="level-selectors">
-                <button class="level-btn active" data-level="padrao">Padrão</button>
-                <button class="level-btn" data-level="intermediario">Intermediário</button>
-                <button class="level-btn" data-level="avancado">Avançado</button>
-                <button class="level-btn" data-level="personalizado">Personalizado</button>
+            <h2 id="config-title">⚙️ Configurações do Cuidador</h2>
+
+            <div class="level-selectors" role="group" aria-label="Níveis de dificuldade">
+                <button type="button" class="level-btn active" data-level="padrao">Padrão</button>
+                <button type="button" class="level-btn" data-level="intermediario">Intermediário</button>
+                <button type="button" class="level-btn" data-level="avancado">Avançado</button>
+                <button type="button" class="level-btn" data-level="personalizado">Personalizado</button>
             </div>
+
             <div class="config-options">
                 <div class="config-item">
-                    <label>Quantidade de Pares:</label>
+                    <label for="cfg-pairs">Quantidade de Pares:</label>
                     <select id="cfg-pairs">
                         <option value="4">4 Pares (8 Cartas)</option>
                         <option value="6" selected>6 Pares (12 Cartas)</option>
                         <option value="8">8 Pares (16 Cartas)</option>
                     </select>
                 </div>
+
                 <div class="config-item">
-                    <label>Silhueta na 2ª Carta:</label>
+                    <label for="cfg-silhouette">Silhueta na 2ª Carta:</label>
                     <select id="cfg-silhouette">
                         <option value="true" selected>Ligado</option>
                         <option value="false">Desligado</option>
                     </select>
                 </div>
+
                 <div class="config-item">
-                    <label>Modo de Confirmação:</label>
+                    <label for="cfg-confirmation">Modo de Confirmação:</label>
                     <select id="cfg-confirmation">
                         <option value="auto" selected>Automático (Validação direta)</option>
                         <option value="manual">Manual (2 Botões: OK / Cancelar)</option>
                     </select>
                 </div>
+
                 <div class="config-item">
-                    <label>Limite de Escuta de Som:</label>
+                    <label for="cfg-sound-limit">Limite de Escuta de Som:</label>
                     <select id="cfg-sound-limit">
                         <option value="unlimited" selected>Ilimitado</option>
                         <option value="3">Máximo 3 vezes</option>
                         <option value="1">Máximo 1 vez</option>
                     </select>
                 </div>
+
                 <div class="config-item">
-                    <label>Timer de Decisão (2ª Carta):</label>
+                    <label for="cfg-timer">Timer de Decisão (2ª Carta):</label>
                     <select id="cfg-timer">
                         <option value="off" selected>Desligado</option>
                         <option value="10">10 Segundos</option>
@@ -97,62 +154,45 @@
                     </select>
                 </div>
             </div>
-                <div class="config-actions">
-                    <button id="save-and-start" class="btn btn-gold">Salvar e Iniciar</button>
-                    <button id="save-and-exit" class="btn btn-secondary">Salvar e Sair</button>
-                </div>
-        </div>
-    </div>
 
-        <!-- TELA DO JOGO -->
-
-    <div id="game-screen" class="screen">
-        <header class="game-header">
-            <div id="score-counter">Pares: 0 / 6</div>
-            <div class="top-menu-controls">
-                <button id="btn-restart-game" class="btn-icon">🔄 Reiniciar</button>
-                <button id="btn-menu-game" class="btn-icon">🏠 Menu</button>
+            <div class="config-actions">
+                <button id="save-and-start" type="button" class="btn btn-gold">Salvar e Iniciar</button>
+                <button id="save-and-exit" type="button" class="btn btn-secondary">Salvar e Sair</button>
             </div>
-        </header>
-        <main id="game-board" class="board">
-            <!-- DINÂMICO VIA JS -->
-        </main>
 
-        <div id="manual-action-bar" class="manual-action-bar">
-                <p>Confirmar escolha?</p>
-            <div class="bar-buttons">
-                <button id="btn-global-ok" class="action-btn btn-confirm">✔️</button>
-                <button id="btn-global-no" class="action-btn btn-cancel">❌</button>
-            </div>
         </div>
 
-        <footer id="collection-area" class="collection">
-            <!-- DINÂMICO VIA JS -->
-        </footer>
     </div>
 
-            <!-- MODAL CONFIRMAÇÃO SAIR/REINICIAR -->
 
-    <div id="modal-confirm" class="modal">
+    <div id="modal-confirm" class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-text">
+
         <div class="modal-content small-modal">
             <p id="confirm-text">Deseja realmente voltar ao menu?</p>
             <div class="modal-buttons">
-                <button id="confirm-yes" class="btn btn-primary">Sim</button>
-                <button id="confirm-no" class="btn btn-secondary">Não</button>
+                <button id="confirm-yes" type="button" class="btn btn-primary">Sim</button>
+                <button id="confirm-no" type="button" class="btn btn-secondary">Não</button>
             </div>
         </div>
+
     </div>
 
-    <div id="victory-modal" class="modal-overlay" style="display: none;">
+
+    <div id="victory-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="victory-title" style="display: none;">
+
         <div class="modal-content">
-            <h2>Parabéns! Você conseguiu!</h2>
+            <h2 id="victory-title">Parabéns! Você conseguiu!</h2>
             <div class="modal-buttons">
-                <button id="btn-back-menu" class="btn-action">Voltar para o Menu</button>
+                <button id="btn-back-menu" type="button" class="btn-action">Voltar para o Menu</button>
             </div>
         </div>
-    </div>
-            <!-- SCRIPTS -->
 
+    </div>
+
+
+    <!-- ======================================================================
+         SCRIPTS
+         ====================================================================== -->
     <script src="js/dados.js"></script>
     <script src="js/game.js"></script>
 </body>
