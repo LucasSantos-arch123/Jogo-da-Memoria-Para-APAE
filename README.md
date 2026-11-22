@@ -2,6 +2,8 @@
 
 Projeto educacional interativo voltado ao estímulo visual e auditivo, desenvolvido para uso em telas touchscreen (como TVs e tablets) em contextos de mediação pedagógica, para os alunos da APAE.
 
+> **Jogar online:** [Acesse o Jogo da Memória Multissensorial](https://lucassantos-arch123.github.io/Jogo-da-Memoria-Para-APAE/)
+
 ## Objetivo e Finalidade
 
 * **Estímulo multissensorial:** Associa imagens de animais a seus respectivos sons para apoiar a percepção visual, auditiva e a memória.
